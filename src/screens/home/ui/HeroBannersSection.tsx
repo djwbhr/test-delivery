@@ -8,6 +8,7 @@ import {
   NativeScrollEvent,
   Text,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeroBannersQuery } from '../../../entities/ads/api/useHeroBannersQuery';
 import { wp, hp } from '../../../shared/lib/adaptive-sizes';
 
@@ -19,6 +20,7 @@ const LOCAL_IMAGES = [
 
 export const HeroBannersSection = () => {
   const query = useHeroBannersQuery();
+  const insets = useSafeAreaInsets();
 
   const items = useMemo(() => query.data ?? [], [query.data]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -63,7 +65,7 @@ export const HeroBannersSection = () => {
         style={styles.carousel}
       />
       {displayData.length > 1 && (
-        <View style={styles.pagination}>
+        <View style={[styles.pagination, { bottom: hp(72) + insets.bottom }]}>
           {displayData.map((_: any, index: number) => (
             <View
               key={index}
@@ -86,7 +88,6 @@ const styles = StyleSheet.create({
   },
   pagination: {
     position: 'absolute',
-    bottom: hp(60),
     flexDirection: 'row',
     alignSelf: 'center',
     zIndex: 10,
