@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Vendor } from '../../../entities/vendor/model/types';
 import { useFavoritesStore } from '../../../shared/model/useFavoritesStore';
+import { wp, hp } from '../../../shared/lib/adaptive-sizes';
 import { UnionIcon } from '../../../shared/assets/icons/UnionIcon';
 
 type Props = {
@@ -19,12 +20,12 @@ export function RestaurantCard({ vendor }: Props) {
   const mainImageUri = vendor.image?.url_lg ?? vendor.image?.url ?? null;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
       <View style={styles.imageContainer}>
         {mainImageUri ? (
-          <Image source={{ uri: mainImageUri }} style={styles.mainImage} />
+          <Image source={{ uri: mainImageUri }} style={styles.image} />
         ) : (
-          <View style={[styles.mainImage, styles.placeholder]} />
+          <View style={[styles.image, styles.placeholder]} />
         )}
 
         <TouchableOpacity
@@ -35,7 +36,7 @@ export function RestaurantCard({ vendor }: Props) {
           <UnionIcon fill={isFavorite ? '#FF3B30' : 'none'} />
         </TouchableOpacity>
 
-        <View style={styles.logoBadge}>
+        <View style={styles.badge}>
           {logoUri ? (
             <Image source={{ uri: logoUri }} style={styles.logo} />
           ) : (
@@ -45,84 +46,103 @@ export function RestaurantCard({ vendor }: Props) {
       </View>
 
       <View style={styles.info}>
-        <Text numberOfLines={1} style={styles.name}>
-          {vendor.general_info.name}
-        </Text>
-        <View style={styles.meta}>
-          <Text style={styles.rating}>⭐ {vendor.rating}</Text>
-          <Text style={styles.metaText}> (10) • Европейская кухня</Text>
+        <View style={styles.header}>
+          <Text numberOfLines={1} style={styles.name}>
+            {vendor.general_info.name}
+          </Text>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.rating}>⭐ {vendor.rating}</Text>
+          </View>
         </View>
+        <Text style={styles.details}>Европейская кухня • 10-20 мин</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
+  card: {
+    marginBottom: hp(24),
+    backgroundColor: '#fff',
+    borderRadius: wp(16),
+    overflow: 'hidden',
   },
   imageContainer: {
     width: '100%',
-    height: 180,
-    borderRadius: 24,
-    overflow: 'hidden',
-    backgroundColor: '#F2F4F7',
+    height: hp(160),
+    position: 'relative',
   },
-  mainImage: {
+  image: {
     width: '100%',
     height: '100%',
+    backgroundColor: '#F2F4F7',
   },
   placeholder: {
     backgroundColor: '#EAECF0',
   },
   favoriteButton: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    top: hp(12),
+    right: wp(12),
+    width: wp(32),
+    height: wp(32),
+    borderRadius: wp(16),
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 2,
   },
-  logoBadge: {
+  badge: {
     position: 'absolute',
-    left: 16,
-    bottom: 16,
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
-    padding: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    bottom: hp(12),
+    left: wp(12),
+    width: wp(48),
+    height: wp(48),
+    borderRadius: wp(24),
+    borderWidth: 2,
+    borderColor: '#fff',
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   logo: {
     width: '100%',
     height: '100%',
-    borderRadius: 12,
   },
   info: {
-    marginTop: 12,
+    paddingVertical: hp(12),
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: hp(4),
   },
   name: {
-    fontSize: 18,
+    fontSize: wp(16),
     fontWeight: '700',
     color: '#101828',
+    flex: 1,
   },
   meta: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F2F4F7',
+    paddingHorizontal: wp(8),
+    paddingVertical: hp(2),
+    borderRadius: wp(12),
   },
   rating: {
-    fontSize: 14,
+    fontSize: wp(12),
     fontWeight: '600',
     color: '#101828',
+    marginLeft: wp(4),
   },
-  metaText: {
-    fontSize: 14,
+  details: {
+    fontSize: wp(14),
     color: '#667085',
   },
 });

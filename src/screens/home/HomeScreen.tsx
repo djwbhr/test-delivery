@@ -19,6 +19,7 @@ import { useVendorsQuery } from '../../entities/vendor/api/useVendorsQuery';
 import { RestaurantCard } from './ui/RestaurantCard';
 import { Vendor } from '../../entities/vendor/model/types';
 
+import { wp, hp } from '../../shared/lib/adaptive-sizes';
 import { ShadowOverlay } from '../../shared/ui/ShadowOverlay';
 
 export function HomeScreen() {
@@ -27,6 +28,9 @@ export function HomeScreen() {
   const animatedIndex = useSharedValue(-1);
   const snapPoints = useMemo(() => ['45%', '100%'], []);
   const [isReady, setIsReady] = useState(false);
+
+  const BORDER_RADIUS_32 = wp(32);
+  const MARGIN_12 = wp(12);
 
   const heroAnimatedStyle = useAnimatedStyle(() => {
     'worklet';
@@ -46,13 +50,13 @@ export function HomeScreen() {
     const borderRadius = interpolate(
       value,
       [0, 0.5, 1],
-      [0, 32, 32],
+      [0, BORDER_RADIUS_32, BORDER_RADIUS_32],
       Extrapolate.CLAMP,
     );
     const horizontalMargin = interpolate(
       value,
       [0, 0.5, 1],
-      [0, 12, 12],
+      [0, MARGIN_12, MARGIN_12],
       Extrapolate.CLAMP,
     );
 
@@ -61,7 +65,7 @@ export function HomeScreen() {
       marginHorizontal: horizontalMargin,
       overflow: 'hidden',
     };
-  }, []);
+  }, [BORDER_RADIUS_32, MARGIN_12]);
 
   const animatedBackgroundStyle = useAnimatedStyle(() => {
     'worklet';
@@ -69,7 +73,7 @@ export function HomeScreen() {
     const borderRadius = interpolate(
       value,
       [0.9, 1],
-      [32, 0],
+      [BORDER_RADIUS_32, 0],
       Extrapolate.CLAMP,
     );
 
@@ -77,7 +81,7 @@ export function HomeScreen() {
       borderTopLeftRadius: borderRadius,
       borderTopRightRadius: borderRadius,
     };
-  }, []);
+  }, [BORDER_RADIUS_32]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 100);
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 475,
+    height: hp(520),
     backgroundColor: '#000',
     zIndex: 0,
   },
@@ -182,8 +186,8 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   bottomSheetBackground: {
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    borderTopLeftRadius: wp(32),
+    borderTopRightRadius: wp(32),
   },
   sheetBackground: {
     backgroundColor: '#FFFFFF',
@@ -204,26 +208,26 @@ const styles = StyleSheet.create({
   },
   handleIndicator: {
     backgroundColor: '#EAECF0',
-    width: 40,
-    height: 4,
-    marginTop: 8,
+    width: wp(40),
+    height: hp(4),
+    marginTop: hp(8),
   },
   sheetHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingHorizontal: wp(16),
+    paddingTop: hp(16),
+    paddingBottom: hp(12),
   },
   sheetTitle: {
-    fontSize: 20,
+    fontSize: wp(20),
     fontWeight: '800',
     color: '#101828',
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 40,
+    paddingHorizontal: wp(16),
+    paddingBottom: hp(40),
   },
   empty: {
-    marginTop: 40,
+    marginTop: hp(40),
     alignItems: 'center',
   },
 });

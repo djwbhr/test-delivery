@@ -1,18 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
-  Image,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   StyleSheet,
   View,
+  FlatList,
+  Image,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  Text,
 } from 'react-native';
-
 import { useHeroBannersQuery } from '../../../entities/ads/api/useHeroBannersQuery';
-
-const { width: screenWidth } = Dimensions.get('window');
-const CAROUSEL_HEIGHT = 475;
+import { wp, hp } from '../../../shared/lib/adaptive-sizes';
 
 const LOCAL_IMAGES = [
   require('../../../shared/assets/images/img1.png'),
@@ -20,7 +17,7 @@ const LOCAL_IMAGES = [
   require('../../../shared/assets/images/img3.png'),
 ];
 
-export function HeroBannersSection() {
+export const HeroBannersSection = () => {
   const query = useHeroBannersQuery();
 
   const items = useMemo(() => query.data ?? [], [query.data]);
@@ -28,18 +25,21 @@ export function HeroBannersSection() {
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrollOffset = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollOffset / screenWidth);
+    const index = Math.round(scrollOffset / wp(375));
     if (index !== activeIndex) {
       setActiveIndex(index);
     }
   };
 
-  const renderItem = ({ index }: { index: number }) => {
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
     const imageSource = LOCAL_IMAGES[index % LOCAL_IMAGES.length];
 
     return (
       <View style={styles.slide}>
         <Image source={imageSource} style={styles.image} resizeMode="cover" />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{item.title}</Text>
+        </View>
       </View>
     );
   };
@@ -58,13 +58,13 @@ export function HeroBannersSection() {
         showsHorizontalScrollIndicator={false}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        snapToInterval={screenWidth}
+        snapToInterval={wp(375)}
         decelerationRate="fast"
         style={styles.carousel}
       />
       {displayData.length > 1 && (
         <View style={styles.pagination}>
-          {displayData.map((_, index) => (
+          {displayData.map((_: any, index: number) => (
             <View
               key={index}
               style={[styles.dot, index === activeIndex && styles.activeDot]}
@@ -74,11 +74,11 @@ export function HeroBannersSection() {
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    height: CAROUSEL_HEIGHT,
+    height: hp(520),
     backgroundColor: '#000',
   },
   carousel: {
@@ -86,30 +86,43 @@ const styles = StyleSheet.create({
   },
   pagination: {
     position: 'absolute',
-    bottom: 60,
+    bottom: hp(60),
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    gap: 6,
+    alignSelf: 'center',
+    zIndex: 10,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: wp(8),
+    height: wp(8),
+    borderRadius: wp(4),
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    marginHorizontal: wp(4),
   },
   activeDot: {
-    width: 18,
     backgroundColor: '#FFFFFF',
+    width: wp(20),
   },
   slide: {
-    width: screenWidth,
-    height: CAROUSEL_HEIGHT,
+    width: wp(375),
+    height: hp(520),
   },
   image: {
-    flex: 1,
-    width: screenWidth,
-    height: CAROUSEL_HEIGHT,
+    width: wp(375),
+    height: hp(520),
+  },
+  textContainer: {
+    position: 'absolute',
+    top: hp(60),
+    left: wp(20),
+    right: wp(20),
+    zIndex: 2,
+  },
+  title: {
+    fontSize: wp(28),
+    fontWeight: '800',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
 });
