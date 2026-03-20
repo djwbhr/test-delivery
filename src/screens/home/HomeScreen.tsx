@@ -13,12 +13,13 @@ import Animated, {
   Extrapolate,
 } from 'react-native-reanimated';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { HeroBannersSection } from './ui/HeroBannersSection';
 import { useVendorsQuery } from '../../entities/vendor/api/useVendorsQuery';
 import { RestaurantCard } from './ui/RestaurantCard';
 import { Vendor } from '../../entities/vendor/model/types';
+
+import { ShadowOverlay } from '../../shared/ui/ShadowOverlay';
 
 export function HomeScreen() {
   const vendorsQuery = useVendorsQuery();
@@ -78,16 +79,6 @@ export function HomeScreen() {
     };
   }, []);
 
-  const shadowAnimatedStyle = useAnimatedStyle(() => {
-    'worklet';
-    const value = animatedIndex.value;
-    const opacity = interpolate(value, [0, 0.2], [1, 0], Extrapolate.CLAMP);
-
-    return {
-      opacity,
-    };
-  }, []);
-
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 100);
     return () => clearTimeout(timer);
@@ -105,23 +96,9 @@ export function HomeScreen() {
             animatedBackgroundStyle,
           ]}
         />
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.shadowOverlay, shadowAnimatedStyle]}
-        >
-          <Svg width="100%" height="100%">
-            <Defs>
-              <LinearGradient id="shadow" x1="0" y1="1" x2="0" y2="0">
-                <Stop offset="0" stopColor="#000" stopOpacity="0.70" />
-                <Stop offset="1" stopColor="#000" stopOpacity="0" />
-              </LinearGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#shadow)" />
-          </Svg>
-        </Animated.View>
       </View>
     ),
-    [animatedBackgroundStyle, shadowAnimatedStyle],
+    [animatedBackgroundStyle],
   );
 
   if (!isReady) {
@@ -138,6 +115,7 @@ export function HomeScreen() {
         ]}
       >
         <HeroBannersSection />
+        <ShadowOverlay animatedIndex={animatedIndex} />
       </Animated.View>
 
       <BottomSheet
@@ -155,29 +133,31 @@ export function HomeScreen() {
         <View style={styles.sheetHeader}>
           <Text style={styles.sheetTitle}>Недалеко от вас</Text>
         </View>
-        <BottomSheetFlatList
-          data={vendors}
-          keyExtractor={(item: Vendor) => String(item.id)}
-          contentContainerStyle={styles.listContent}
-          renderItem={({ item }: { item: Vendor }) => (
-            <RestaurantCard vendor={item} />
-          )}
-          ListEmptyComponent={
-            vendorsQuery.isLoading ? (
-              <View style={styles.empty}>
-                <Text>Загрузка ресторанов...</Text>
-              </View>
-            ) : vendorsQuery.isError ? (
-              <View style={styles.empty}>
-                <Text>Ошибка загрузки ресторанов</Text>
-              </View>
-            ) : (
-              <View style={styles.empty}>
-                <Text>Рестораны не найдены</Text>
-              </View>
-            )
-          }
-        />
+        <View style={styles.listContainer}>
+          <BottomSheetFlatList
+            data={vendors}
+            keyExtractor={(item: Vendor) => String(item.id)}
+            contentContainerStyle={styles.listContent}
+            renderItem={({ item }: { item: Vendor }) => (
+              <RestaurantCard vendor={item} />
+            )}
+            ListEmptyComponent={
+              vendorsQuery.isLoading ? (
+                <View style={styles.empty}>
+                  <Text>Загрузка ресторанов...</Text>
+                </View>
+              ) : vendorsQuery.isError ? (
+                <View style={styles.empty}>
+                  <Text>Ошибка загрузки ресторанов</Text>
+                </View>
+              ) : (
+                <View style={styles.empty}>
+                  <Text>Рестораны не найдены</Text>
+                </View>
+              )
+            }
+          />
+        </View>
       </BottomSheet>
     </View>
   );
@@ -211,13 +191,16 @@ const styles = StyleSheet.create({
   renderBackgroundContainer: {
     overflow: 'visible',
   },
+  listContainer: {
+    flex: 1,
+  },
   shadowOverlay: {
     position: 'absolute',
-    top: -70,
+    top: -120,
     left: 0,
     right: 0,
-    height: 100,
-    zIndex: -1,
+    height: 60,
+    zIndex: 999,
   },
   handleIndicator: {
     backgroundColor: '#EAECF0',
